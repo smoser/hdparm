@@ -1,0 +1,193 @@
+#!/bin/bash
+burl="https://downloads.sourceforge.net/project/hdparm/hdparm/"
+dld=$PWD/dl
+gd="$PWD/gdir"
+
+fail() { echo "$@" 1>&2; exit 1; }
+error() { echo "$@" 1>&2; }
+CR='
+'
+dl() {
+    local url="$1" out="$2"
+    [ -f "$out" ] && error "$out [cached]" && return 0
+    wget "$url" -O "$out.tmp" && mv "$out.tmp" "$out"
+}
+dldata() {
+    cat <<EOF | tac
+hdparm-9.58.tar.gz 	2018-10-26 	138.8 kB 	
+hdparm-9.57.tar.gz 	2018-10-16 	138.8 kB 	
+hdparm-9.56.tar.gz 	2018-03-25 	137.2 kB 	
+hdparm-9.55.tar.gz 	2018-03-15 	136.8 kB 	
+hdparm-9.54.tar.gz 	2018-02-03 	136.8 kB 	
+hdparm-9.53.tar.gz 	2018-01-05 	137.0 kB 	
+hdparm-9.52.tar.gz 	2017-05-01 	140.7 kB 	
+hdparm-9.51.tar.gz 	2017-01-19 	133.7 kB 	
+hdparm-9.50.tar.gz 	2016-10-19 	133.3 kB 	
+hdparm-9.49.tar.gz 	2016-10-17 	158.2 kB 	
+hdparm-9.48.tar.gz 	2015-06-17 	130.3 kB 	
+hdparm-9.47.tar.gz 	2015-06-14 	130.2 kB 	
+hdparm-9.46.tar.gz 	2015-06-14 	129.7 kB 	
+hdparm-9.45.tar.gz 	2014-09-27 	129.4 kB 	
+hdparm-9.44.tar.gz 	2014-09-27 	129.3 kB 	
+hdparm-9.43.tar.gz 	2012-11-15 	129.6 kB 	
+hdparm-9.42.tar.gz 	2012-09-28 	129.5 kB 	
+hdparm-9.41.tar.gz 	2012-09-28 	127.2 kB 	
+hdparm-9.39.tar.gz 	2012-02-03 	127.0 kB 	
+hdparm-9.38.tar.gz 	2012-01-07 	131.2 kB 	
+hdparm-9.37.tar.gz 	2011-01-24 	122.1 kB 	
+hdparm-9.36.tar.gz 	2010-11-11 	121.2 kB 	
+hdparm-9.35.tar.gz 	2010-10-19 	117.4 kB 	
+hdparm-9.34.tar.gz 	2010-10-16 	117.3 kB 	
+hdparm-9.33.tar.gz 	2010-10-04 	117.2 kB 	
+hdparm-9.32.tar.gz 	2010-09-24 	117.1 kB 	
+hdparm-9.31.tar.gz 	2010-09-24 	117.1 kB 	
+hdparm-9.30.tar.gz 	2010-08-19 	116.4 kB 	
+hdparm-9.29.tar.gz 	2010-06-30 	116.6 kB 	
+hdparm-9.28.tar.gz 	2010-03-09 	114.1 kB 	
+hdparm-9.27.tar.gz 	2009-10-02 	112.4 kB 	
+hdparm-9.26.tar.gz 	2009-08-27 	112.1 kB 	
+hdparm-9.25.tar.gz 	2009-08-16 	110.4 kB 	
+hdparm-9.24.tar.gz 	2009-08-12 	110.0 kB 	
+hdparm-9.23.tar.gz 	2009-08-12 	109.6 kB 	
+hdparm-9.22.tar.gz 	2009-08-02 	109.7 kB 	
+hdparm-9.21.tar.gz 	2009-07-31 	104.1 kB 	
+hdparm-9.20.tar.gz 	2009-07-31 	104.2 kB 	
+hdparm-9.19.tar.gz 	2009-07-30 	102.8 kB 	
+hdparm-9.18.tar.gz 	2009-07-30 	102.7 kB 	
+hdparm-9.17.tar.gz 	2009-07-29 	102.4 kB 	
+hdparm-9.16.tar.gz 	2009-07-16 	94.2 kB 	
+hdparm-9.15.tar.gz 	2009-04-15 	91.4 kB 	
+hdparm-9.14.tar.gz 	2009-04-08 	90.4 kB 	
+hdparm-9.13.tar.gz 	2009-03-21 	90.3 kB 	
+hdparm-9.12.tar.gz 	2009-02-26 	96.5 kB 	
+hdparm-9.11.tar.gz 	2009-02-15 	95.8 kB 	
+hdparm-9.10.tar.gz 	2009-01-28 	95.5 kB 	
+hdparm-9.9.tar.gz 	2009-01-25 	95.4 kB 	
+hdparm-9.8.tar.gz 	2009-01-09 	95.2 kB 	
+hdparm-9.7.tar.gz 	2009-01-09 	95.2 kB 	
+hdparm-9.6.tar.gz 	2008-12-17 	94.9 kB 	
+hdparm-9.5.tar.gz 	2008-12-10 	94.8 kB 	
+hdparm-9.4.tar.gz 	2008-12-09 	95.8 kB 	
+hdparm-9.3.tar.gz 	2008-11-04 	94.1 kB 	
+hdparm-9.2.tar.gz 	2008-11-03 	93.6 kB 	
+hdparm-9.1.tar.gz 	2008-11-03 	93.6 kB 	
+hdparm-9.0.tar.gz 	2008-11-02 	93.0 kB 	
+hdparm-8.9.tar.gz 	2008-06-16 	76.0 kB 	
+hdparm-8.8.tar.gz 	2008-06-11 	75.9 kB 	
+hdparm-8.7.tar.gz 	2008-06-02 	75.1 kB 	
+hdparm-8.6.tar.gz 	2008-02-27 	70.5 kB 	
+hdparm-8.5.tar.gz 	2008-02-24 	70.1 kB 	
+hdparm-8.4.tar.gz 	2008-02-20 	70.0 kB 	
+hdparm-8.3.tar.gz 	2008-02-19 	70.0 kB 	
+hdparm-8.2.tar.gz 	2008-02-19 	69.7 kB 	
+hdparm-8.1.tar.gz 	2008-02-16 	69.0 kB 	
+hdparm-8.0.tar.gz 	2008-02-16 	68.6 kB 	
+hdparm-7.7.tar.gz 	2007-08-08 	62.5 kB 	
+hdparm-7.6.tar.gz 	2007-06-19 	62.4 kB 	
+hdparm-7.5.tar.gz 	2007-06-06 	62.1 kB 	
+hdparm-7.4.tar.gz 	2007-05-31 	62.1 kB 	
+hdparm-7.3.tar.gz 	2007-04-30 	61.2 kB 	
+hdparm-7.2.tar.gz 	2007-04-29 	60.5 kB 	
+hdparm-7.1.tar.gz 	2007-04-28 	60.2 kB 	
+hdparm-7.0.tar.gz 	2007-04-28 	60.1 kB 	
+hdparm-6.9.tar.gz 	2006-10-25 	46.8 kB 	
+hdparm-6.8.tar.gz 	2006-10-16 	46.0 kB 	
+hdparm-6.7.tar.gz 	2006-10-05 	46.6 kB 	
+hdparm-6.6.tar.gz 	2006-03-08 	45.5 kB 	
+hdparm-6.5.tar.gz 	2006-03-01 	46.0 kB 	
+hdparm-6.4.tar.gz 	2006-02-28 	45.7 kB 	
+hdparm-6.3.tar.gz 	2005-10-18 	44.1 kB 	
+hdparm-6.2.tar.gz 	2005-10-18 	43.9 kB 	
+hdparm-6.0.tar.gz 	2005-04-19 	40.6 kB 	
+hdparm-6.1.tar.gz   2005-04-19 	40.7 kB
+EOF
+}
+
+changelog() {
+    # https://fossies.org/linux/hdparm/Changelog
+    # also in the tree at Changelog
+    local file="$1" ver="$2"
+    local url="https://fossies.org/linux/misc/hdparm-9.58.tar.gz/hdparm-9.58/Changelog?m=b"
+    if ! [ -f "$file" ]; then 
+        dl "$url" "$file" || return 1
+    fi
+    local line="" buf=""
+    while read line; do
+        case "$line" in
+            hdparm-$ver:|hdparm-$ver)
+                while read line; do
+                    case "$line" in
+                        hdparm-*) break 2;;
+                        *) buf="$buf$CR$line";;
+                    esac
+                done
+                ;;
+        esac
+    done < "$file"
+    [ -n "$buf" ] || {
+        error "no changelog message for $ver";
+    }
+    _RET="Release $ver${CR}${buf}${CR}"
+}
+
+rm_all() {
+    local f=""
+    set --
+    for f in * .*; do
+        [ "$f" = "." -o "$f" = ".." ] && continue
+        [ -e "$f" -o -L "$f" ] && set -- "$@" "$f"
+    done
+    [ $# -eq 0 ] && return 0
+    rm -Rf "$@"
+}
+
+git_import() {
+    local gd="$1" ver="$2" tgz="$3" date="$4" msg="$5"
+    if ( cd "$gd" && git tag -l ) | grep "^$ver$"; then
+        error "$ver: already imported"
+        return 0
+    fi
+    ( cd "$gd" && mv .git .. &&
+        trap "[ -d .git ] || mv ../.git ." EXIT &&
+        rm_all && mv ../.git . &&
+        tar --strip-components=1 -xzf - &&
+        git add . &&
+        git commit \
+            --author="Mark Lord <mlord@pobox.com>" \
+            --message="$msg" \
+            --date="$date" &&
+        git tag "$ver"
+        ) < "$tgz"
+}
+
+addver() {
+   local tgz="$1" date="$2" dld="$3" gd="$4"
+   dl "$burl/$tgz" "$dld/$tgz" || {
+       error "failed download $tgz"
+       return 1
+   }
+   local ver=""
+   ver=${tgz%.tar.*}
+   ver=${ver#hdparm-}
+
+   changelog "$dld/changelog" "$ver" || {
+       error "failed to read changelog for $ver"
+       return 1
+   }
+   local msg="$_RET"
+
+   git_import "$gd" "$ver" "$dld/$tgz" "$date" "$msg" || return
+}
+
+[ -d "$dld" ] || mkdir -p "$dld" || fail "failed mkdir dld"
+if [ ! -d "$gd" ]; then
+    mkdir -p "$gd" || fail "failed to create $gd"
+fi
+if [ ! -d "$gd/.git" ]; then
+    ( cd "$gd" && git init . ) || fail "failed git init in $gd"
+fi
+
+dldata | while read tgz date size kb; do
+   addver "$tgz" "$date" "$dld" "$gd" ||
+       fail "failed adding $tgz"
+done
